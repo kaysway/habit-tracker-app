@@ -1,4 +1,4 @@
-//mock data
+//mock log posts for user
 var mock_log_posts = {
  "logPosts": [
      {
@@ -17,4 +17,36 @@ var mock_log_posts = {
          "publishedAt": 1470016976609
      }
  ]   
+};
+
+//async callback function
+function getRecentLogPosts(callbackFn) {
+    setTimeout(function(){ callbackFn(mock_log_posts)}, 1);
+}
+
+//mock login data for user with username and password
+var mock_user_login = {
+    "userLogin": [
+        {
+            "id": "111111",
+            "username": "test@gmail.com",
+            "password": "test123"
+        }
+    ]
+};
+
+//goal selection list data
+var goal_list = {
+    "goalList": [
+        {
+            "name": "Run a marathon",
+            "description": "Incremental steps from running 0 miles to running a full length 26 mile marathon",
+            "time requirement": "Minimum 12 weeks"
+        },
+        {
+            "name": "Save an emergency fund",
+            "description": "Daily tasks and tips to help you create better saving habits to create a healthy emergency fund",
+            "time requirement": "3 - 6 months minimum"
+        }
+    ]
 };
