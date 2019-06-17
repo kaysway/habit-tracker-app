@@ -35,7 +35,7 @@ var mock_user_login = {
     ]
 };
 
-//goal selection list data
+//permanent goal selection list
 var goal_list = {
     "goalList": [
         {
@@ -50,3 +50,21 @@ var goal_list = {
         }
     ]
 };
+
+//goal overview data with daily task information
+var goal_overview = {
+    "goalOverview": [
+        {
+            "name": "Run a marathon",
+            "description": "Long description here",
+            "daily tasks": "array of daily tasks"
+        }
+    ]
+};
+
+//goal progress data for in progress goals
+var goal_progress = {
+    "goalProgress": [
+
+    ]
+}
