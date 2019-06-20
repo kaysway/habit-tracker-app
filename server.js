@@ -11,9 +11,9 @@ const { User } = require("./models");
 const app = express();
 app.use(express.json());
 
-// GET requests to /goals => return goals list
+// GET requests to /goals => return habit list
 
-// PUT request to /goals => update a selected goal with log
+// PUT request to /habit => update a selected habit with log comments
 // or completing a daily task
 
 // catch-all endpoint if client makes request to non-existent endpoint

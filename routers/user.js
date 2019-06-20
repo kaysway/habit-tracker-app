@@ -3,13 +3,15 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
-const mongoose = require('mongoose');
-mongoose.Promise = global.Promise;
-const { User, Goal } = require('./models');
 
 const router = express.Router();
 
-router.post('/user', jsonParser, (req, res) => {
+const { User } = require('./models/user');
+
+router.use(express.json());
+
+// Create new user
+router.post('/', jsonParser, (req, res) => {
     const requiredFields = ['username', 'password'];
     const missingField = requiredFields.find(
         field => !(field in req.body)
@@ -39,6 +41,66 @@ router.post('/user', jsonParser, (req, res) => {
     }
 
     let { username, password } = req.body;
+
+    // Verify username and password meets minimmum and maximum character requirements
+  const requiredLengths = {
+    username: {
+      min: 4
+    },
+    password: {
+      min: 8,
+      max: 72
+    }
+  };
+  const fieldTooSmall = Object.keys(requiredLengths).find(
+    field =>
+      "min" in requiredLengths[field] &&
+      req.body[field].trim().length < requiredLengths[field].min
+  );
+  const fieldTooLarge = Object.keys(requiredLengths).find(
+    field =>
+      "max" in requiredLengths[field] &&
+      req.body[field].trim().length > requiredLengths[field].max
+  );
+
+  if (fieldTooSmall || fieldTooLarge) {
+    return res.status(422).json({
+      code: 422,
+      reason: "ValidationError",
+      message: fieldTooSmall
+        ? `Must be at least ${
+            requiredLengths[fieldTooSmall].min
+          } character(s) long`
+        : `Must be less than ${
+            requiredLengths[fieldTooLarge].max
+          } characters long`,
+      location: fieldTooSmall || fieldTooLarge
+    });
+  }
+
+  // Verify username and password are trimmed (no whitespace)
+  const explTrimmedFields = ["username", "password"];
+  const nonTrimmedField = explTrimmedFields.find(
+    field => req.body[field] !== req.body[field].trim()
+  );
+  if (nonTrimmedField) {
+    return res.status(422).json({
+      code: 422,
+      reason: "ValidationError",
+      message: "Cannot start or end with whitespace",
+      location: nonTrimmedField
+    });
+  }
+
+  // Verify passwords match
+  if (req.body.password !== req.body.password2) {
+    return res.status(422).json({
+      code: 422,
+      reason: "ValidationError",
+      message: "Passwords do not match",
+      location: "password"
+    });
+  }
 
     return User
         .find({ username })
@@ -75,39 +137,4 @@ router.post('/user', jsonParser, (req, res) => {
             });
         });
 
-    router.get('/goal', (req, res) => {
-        Goal
-            .findbyId(req.params.id)
-            .then(goal => {
-                return res.json(goal.serialize());
-            })
-            .catch(err => {
-                console.error(err);
-                res.status(500).json({ error: 'Internal server error' });
-            });
-    })
-
-    router.put('/goal/:id', (req, res) => {
-        if (!(req.params.id && req.body.id && req.params.id === req.body.id)) {
-            res.status(400).json({
-                error: 'Request path id and request body id values must match'
-            });
-        }
-
-        const updated = {};
-        const updateableFields = ['goal', 'value'];
-        updateableFields.forEach(field => {
-            if (field in req.body) {
-                updated[field] = req.body[field];
-            }
-        });
-
-        Goal
-        .findByIdAndUpdate(req.params.id, { $set: updated }, {new: true })
-        .then(updatedGoal => res.status(204).end())
-        .catch(err => res.status(500).json({ message: 'Internal server error'}));
-    })
-};
-
 module.exports = { router };
-
