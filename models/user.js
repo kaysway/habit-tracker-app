@@ -12,11 +12,27 @@ const userSchema = mongoose.Schema({
         unique: true,
         trim: true
     },
+    user: {
+        firstName: String,
+        lastName: String
+    },
     password: { 
         type: String, 
         required: true 
     }
 });
+
+userSchema.virtual('userName').get(function() {
+    return `${this.user.firstName} ${this.user.lastName}`.trim();
+});
+
+userSchema.methods.serialize = function() {
+    return {
+        id: this._id,
+        username: this.username,
+        user: this.user
+    };
+};
 
 userSchema.methods.generateHash = function(password) {
     return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
@@ -26,13 +42,5 @@ userSchema.methods.validatePassword = function(password) {
     return bcrypt.compareSync(password, this.password);
 };
 
-userSchema.methods.serialize = function() {
-    return {
-        id: this._id,
-        username: this.username
-    };
-};
-
 const User = mongoose.model('User', userSchema);
-
-module.exports = User;
+module.exports = { User };
