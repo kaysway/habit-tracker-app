@@ -1,7 +1,7 @@
 'use strict'
 const mongoose = require("mongoose");
 
-const habitSchema = mongoose.Schema({
+const goalSchema = mongoose.Schema({
     name: String,
     description: String,
     complete: String,
@@ -9,6 +9,6 @@ const habitSchema = mongoose.Schema({
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User" }
 });
 
-const Habit = mongoose.model("Habit", goalSchema);
+const Goal = mongoose.model("Goal", goalSchema);
 
-module.exports = { Habit };
+module.exports = { Goal };
