@@ -6,12 +6,12 @@ const jsonParser = bodyParser.json();
 
 const router = express.Router();
 
-const { User } = require('./models/user');
+const { User } = require('../models/user');
 
 router.use(express.json());
 
-// Create new user
-router.post('/', jsonParser, (req, res) => {
+// Create /register new user
+router.post('/signup', jsonParser, (req, res) => {
     const requiredFields = ['username', 'password'];
     const missingField = requiredFields.find(
         field => !(field in req.body)
@@ -142,5 +142,6 @@ router.post('/', jsonParser, (req, res) => {
                 message: 'Server error while creating user'
             });
         });
+    });
 
 module.exports = { router };

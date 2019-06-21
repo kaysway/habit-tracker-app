@@ -7,9 +7,21 @@ mongoose.Promise = global.Promise;
 
 const { PORT, DATABASE_URL } = require("./config");
 const { User } = require("./models");
+const { router: userRouter} = require("./routers/user");
 
 const app = express();
 app.use(express.json());
+
+// CORS
+app.use(function (req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE');
+  if (req.method === 'OPTIONS') {
+    return res.send(204);
+  }
+  next();
+});
 
 // GET requests to /goals => return habit list
 
@@ -20,6 +32,8 @@ app.use(express.json());
 app.use("*", function(req, res) {
   res.status(404).json({ message: "Not Found" });
 });
+
+app.use("./user", userRouter);
 
 let server;
 
