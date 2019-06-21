@@ -44,5 +44,19 @@ router.put('/task/:id', (req, res) => {
     );
 });
 
+// load existing goal and tasks to user profile
+    router.get('/profile', (req, res) => {
+        let goals;
+        Goal.find().then(returnedGoals=>{
+            goals = returnedGoals;
+            return task.find();
+              }).then(goal=>{
+            res.render('pages/current-goals',{
+            user: req.user,
+            goals: goals,
+            task: task
+                });
+              }); 
+    })
 module.exports = { router };
 

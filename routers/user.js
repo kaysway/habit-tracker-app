@@ -42,6 +42,12 @@ router.post('/', jsonParser, (req, res) => {
 
     let { username, password } = req.body;
 
+    // login
+    router.get('/', (req, res) => {
+        res.render('pages/index', { user: req.user
+        });
+    });
+
     // Verify username and password meets minimmum and maximum character requirements
   const requiredLengths = {
     username: {
