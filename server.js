@@ -21,6 +21,7 @@ app.use(express.static("public"));
 const app = express();
 app.use(morgan('common'));
 app.use(express.json());
+app.use('/', express.static(path.join(__dirname, '/public'))); 
 
 passport.use(localStategy);
 passport.use(jwtStrategy);
