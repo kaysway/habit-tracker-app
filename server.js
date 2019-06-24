@@ -1,16 +1,41 @@
 "use strict";
 
+// dependencies
+require('dotenv').config();
 const express = require('express');
 const mongoose = require("mongoose");
+const morgan = require('morgan');
+const passport = require('passport');
 
+const bodyParser = require('body-parser');
+const SECRET = process.env.SECRET;
+let shortDateFormat = "ddd, MMM DD YYYY";
+app.locals.moment = moment;
+app.locals.shortDateFormat = shortDateFormat;
 mongoose.Promise = global.Promise;
 
-const { PORT, DATABASE_URL } = require("./config");
-const { User } = require("./models");
-const { router: userRouter} = require("./routers/user");
+const path = require('path');
 
+
+app.use(express.static("public"));
 const app = express();
+app.use(morgan('common'));
 app.use(express.json());
+
+passport.use(localStategy);
+passport.use(jwtStrategy);
+require('./config/passport'); 
+
+
+// routes
+const { User } = require("./models/user");
+const { router: userRouter} = require("./routers/user");
+app.use("./routers/user", userRouter);
+
+const { router: authRouter, localStrategy, jwtStrategy } = require('.auth');
+
+// config
+const { PORT, DATABASE_URL } = require("./config/database");
 
 // CORS
 app.use(function (req, res, next) {
@@ -23,23 +48,26 @@ app.use(function (req, res, next) {
   next();
 });
 
-// GET requests to /goals => return habit list
+// required for passport
+app.use(session({
+  secret: SECRET,
+  resave: true,
+  saveUninitialized: true 
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 
-// PUT request to /habit => update a selected habit with log comments
-// or completing a daily task
 
-// catch-all endpoint if client makes request to non-existent endpoint
 app.use("*", function(req, res) {
   res.status(404).json({ message: "Not Found" });
 });
 
-app.use("./user", userRouter);
 
 let server;
 
-function runServer(databaseUrl, port=PORT) {
+function runServer(DATABASE_URL, port = PORT) {
   return new Promise((resolve, reject) => {
-    mongoose.connect(databaseUrl, err => {
+    mongoose.connect(DATABASE_URL, err => {
       if (err) {
         return reject(err);
       }
@@ -51,6 +79,19 @@ function runServer(databaseUrl, port=PORT) {
       .on('error', err => {
         mongoose.disconnect();
         reject(err);
+      });
+    });
+  });
+}
+
+function closeServer() {
+  return mongoose.disconnect().then(() => {
+    return new Promise((resolve, reject) => {
+      server.close(err => {
+        if (err) {
+          return reject(err);
+        }
+        resolve();
       });
     });
   });
