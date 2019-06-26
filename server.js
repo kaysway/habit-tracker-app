@@ -1,42 +1,26 @@
 "use strict";
 
-// dependencies
 require('dotenv').config();
+
 const express = require('express');
 const mongoose = require("mongoose");
-const morgan = require('morgan');
 const passport = require('passport');
+const morgan = require('morgan');
 
-const bodyParser = require('body-parser');
-const SECRET = process.env.SECRET;
-let shortDateFormat = "ddd, MMM DD YYYY";
-app.locals.moment = moment;
-app.locals.shortDateFormat = shortDateFormat;
+const { router: userRouter} = require("./routers/user");
+const { router: goalRouter } = require('./routers/goal');
+const { router: logRouter } = require('./routers/log');
+const { router: taskRouter } = require('./routers/task');
+const { router: authRouter, localStrategy, jwtStrategy } = require('./auth');
+
 mongoose.Promise = global.Promise;
 
-const path = require('path');
-
-
-app.use(express.static("public"));
-const app = express();
-app.use(morgan('common'));
-app.use(express.json());
-app.use('/', express.static(path.join(__dirname, '/public'))); 
-
-passport.use(localStategy);
-passport.use(jwtStrategy);
-require('./config/passport'); 
-
-
-// routes
-const { User } = require("./models/user");
-const { router: userRouter} = require("./routers/user");
-app.use("./routers/user", userRouter);
-
-const { router: authRouter, localStrategy, jwtStrategy } = require('.auth');
-
-// config
 const { PORT, DATABASE_URL } = require("./config/database");
+
+const app = express();
+
+app.use(morgan('common'));
+app.use(express.static("public"));
 
 // CORS
 app.use(function (req, res, next) {
@@ -49,6 +33,45 @@ app.use(function (req, res, next) {
   next();
 });
 
+passport.use(localStategy);
+passport.use(jwtStrategy);
+
+app.use("./routers/user", userRouter);
+app.use("./routers/goal", goalRouter);
+app.use("./routers/log", logRouter);
+app.use("./routers/task", taskRouter);
+app.use('./auth', authRouter);
+
+const jwtAuth = passport.authenticate('jwt', { session: false });
+
+// A protected endpoint which needs a valid JWT to access it
+app.get('/api/protected', jwtAuth, (req, res) => {
+  return res.json({
+    data: 'rosebud'
+  });
+});
+
+app.use("*", function(req, res) {
+  res.status(404).json({ message: "Not Found" });
+});
+
+app.use(function(err, req, res, next) {
+  console.log(err)
+  return res.status(500).json({ message: 'Internal Server Error' });
+});
+
+const bodyParser = require('body-parser');
+const SECRET = process.env.SECRET;
+let shortDateFormat = "ddd, MMM DD YYYY";
+app.locals.moment = moment;
+app.locals.shortDateFormat = shortDateFormat;
+
+const path = require('path');
+
+app.use(express.json());
+
+require('./config/passport');
+
 // required for passport
 app.use(session({
   secret: SECRET,
@@ -57,12 +80,6 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
-
-
-app.use("*", function(req, res) {
-  res.status(404).json({ message: "Not Found" });
-});
-
 
 let server;
 

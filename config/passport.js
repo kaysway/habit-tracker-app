@@ -1,74 +1,53 @@
 'use strict'
 
 const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
-const User = require('../app/models/user');
+const {Strategy: JwtStrategy, ExtractJwt, LocalStrategy} = require('passport-local');
+const { JWT_SECRET } = require('./config');
 
-// serialize the user for the session
-passport.serializeUser(function (user, done) {
-    done(null, user.id);
-});
+const User = require('../models/user');
 
-// deserialize the user
-passport.deserializeUser(function (id, done) {
-    User.findById(id, function (err, user) {
-        done(err, user);
-    });
-});
+// Define and create basicStrategy
+const localStrategy = new LocalStrategy((username, password, done) => {
+    let user;
+    User.findOne({ username })
+      .then(results => {
+        user = results;
+        if(!user) {
+          return Promise.reject({
+            reason: 'LoginError',
+            message: 'Incorrect username',
+            location: 'username'
+          });
+        }
+        return user.validatePassword(password);
+      })
+      .then(isValid => {
+        if (!isValid) {
+          return Promise.reject({
+            reason: 'LoginError',
+            message: 'Incorrect password',
+            location: 'password'
+          });
+        }
+        return done(null, user);
+      })
+      .catch(err => {
+        if (err.reason === 'LoginError') {
+          return done(null, false);
+        }
+        return done(err);
+      });
+  });
 
-// local signup
-
-passport.use('local-signup', new LocalStrategy({
-    usernameField: 'email',
-    passwordField: 'password',
-    passReqToCallback: true
-},
-function(req, username, password, done) {
-
-    User
-        .findOne({ 'username': username }, function(err, user) {
-            if (err)
-                return done(err);
-
-            if (!user)
-                return done(null, false, req.flash('loginMessage', 'Incorrect username. Try again.'));
-
-            if (!user.validatePassword(password)) 
-                return done(null, false, req.flash('loginMessage', 'Incorrect password. Try again.'));
-
-            return done(null, user);
-        });
-}));
-
-passport.use('local-signup', new LocalStrategy({
-usernameField: 'username',
-passwordField: 'password',
-passReqToCallback: true
-},
-function(req, username, password, done) {
-process.nextTick(function() {
-
-    User
-        .findOne({ 'username': username }, function(err, user) {
-            if (err)
-                return done(err);
-
-            if (user) {
-                return done(null, false, req.flash('signupMessage', 'That username is already taken'));
-
-            } else {
-                const newUser = User();
-
-                newUser.username = username;
-                newUser.password = newUser.generateHash(password);
-
-                newUser.save(function(err) {
-                    if (err)
-                        throw err;
-
-                    return done(null, newUser);
-                });
-            }
-        });
-    });
-}));
+  const options = {
+    secretOrKey: JWT_SECRET,
+    jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme('Bearer'),
+    algorithms: ['HS256']
+  };
+  
+  const jwtStrategy = new JwtStrategy(options, (payload, done) => {
+    done(null, payload.user);
+  });
+  
+  
+  module.exports = { localStrategy, JwtStrategy };  
