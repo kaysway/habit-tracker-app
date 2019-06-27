@@ -12,25 +12,19 @@ const userSchema = mongoose.Schema({
         unique: true,
         trim: true
     },
-    user: {
-        firstName: String,
-        lastName: String
-    },
     password: { 
         type: String, 
         required: true 
+    },
+    id: {
+        // add ID string
     }
-});
-
-userSchema.virtual('userName').get(function() {
-    return `${this.user.firstName} ${this.user.lastName}`.trim();
 });
 
 userSchema.methods.serialize = function() {
     return {
         id: this._id,
-        username: this.username,
-        user: this.user
+        username: this.username
     };
 };
 

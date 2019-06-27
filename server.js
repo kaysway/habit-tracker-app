@@ -36,11 +36,11 @@ app.use(function (req, res, next) {
 passport.use(localStategy);
 passport.use(jwtStrategy);
 
-app.use("./routers/user", userRouter);
-app.use("./routers/goal", goalRouter);
-app.use("./routers/log", logRouter);
-app.use("./routers/task", taskRouter);
-app.use('./auth', authRouter);
+app.use("/user", userRouter);
+app.use("/goal", goalRouter);
+app.use("/log", logRouter);
+app.use("/task", taskRouter);
+app.use('/api', authRouter);
 
 const jwtAuth = passport.authenticate('jwt', { session: false });
 

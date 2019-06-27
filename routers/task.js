@@ -9,14 +9,14 @@ const router = express.Router();
 
 // Access user information
 router.get("/", (req, res) => {
-    const {_id } = req.user;
+    const { userId } = req.user;
 
 // Find tasks associated with user
 Task.find({ user: _id }).then(tasks => res.json({ tasks }));
 });
 
 // Update existing task
-router.put('/task/:id', (req, res) => {
+router.put('/:id', (req, res) => {
     const { _id } = req.body;
     const { notes, complete, priority } = req.body;
 

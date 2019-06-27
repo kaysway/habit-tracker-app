@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 
 const taskSchema = mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    comments: { type: String, required: true },
+    detail: { type: String, required: true },
     complete: String,
     dueDate: String
   });
@@ -11,7 +11,7 @@ const taskSchema = mongoose.Schema({
   taskSchema.methods.serialize = function() {
     return {
       id: this._id,
-      comments: this.comments,
+      detail: this.detail,
       complete: this.complete,
       dueDate: this.dueDate
     };

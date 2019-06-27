@@ -6,14 +6,14 @@ mongoose.Promise = global.Promise;
 const logSchema = new mongoose.Schema({
     datePosted: { type: Date, default: Date.now },
     comments: { type: String, required: true },
-    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }
 });
 
 logSchema.methods.serialize = function() {
     let log = {
         id: this._id,
         datePosted: this.datePosted,
-        user: this.user.user
+        userId: this.user._id
     };
     return log;
 };

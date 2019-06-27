@@ -1,13 +1,23 @@
 'use strict'
 const mongoose = require("mongoose");
 
+mongoose.Promise = global.Promise;
+
 const goalSchema = mongoose.Schema({
-    name: String,
+    goal: String,
     description: String,
-    complete: String,
-    dueDate: String,
+    status: { type: String },
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User" }
 });
+
+goalSchema.methods.serialize = function () {
+    return {
+        id: this._id,
+        goal: this.goal,
+        description: this.description,
+        status: this.status
+    };
+};
 
 const Goal = mongoose.model("Goal", goalSchema);
 
