@@ -11,32 +11,8 @@ const expect = chai.expect;
 const User = require('../models/user');
 const { app, runServer, closeServer } = require('../server');
 const { TEST_DATABASE_URL } = require('../config/database');
-
+const faker = require('faker');
 chai.use(chaiHttp);
-
-function tearDownDb() {
-  console.warn('Deleting database');
-  return mongoose.connection.dropDatabase();
-}
-
-describe('User API resource', function () {
-  before(function () {
-
-      return runServer(TEST_DATABASE_URL);
-
-  });
-
-  beforeEach(function () {
-
-  });
-
-  afterEach(function () {
-      return tearDownDb();
-  });
-
-  after(function () {
-      return closeServer();
-  });
 
   describe('GET login endpoint', function () {
       // render the login page
@@ -83,5 +59,30 @@ describe('User API resource', function () {
                         expect(res).to.have.status(200);
                     })
             })
+    });
+});
+
+function tearDownDb() {
+    console.warn('Deleting database');
+    return mongoose.connection.dropDatabase();
+  }
+  
+  describe('User API resource', function () {
+    before(function () {
+  
+        return runServer(TEST_DATABASE_URL);
+  
+    });
+  
+    beforeEach(function () {
+  
+    });
+  
+    afterEach(function () {
+        return tearDownDb();
+    });
+  
+    after(function () {
+        return closeServer();
     });
 });
