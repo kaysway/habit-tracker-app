@@ -15,16 +15,13 @@ const userSchema = mongoose.Schema({
     password: { 
         type: String, 
         required: true 
-    },
-    id: {
-        // add ID string
     }
 });
 
 userSchema.methods.serialize = function() {
     return {
-        id: this._id,
-        username: this.username
+        username: this.username || '',
+        id: this._id
     };
 };
 
@@ -32,7 +29,7 @@ userSchema.methods.generateHash = function(password) {
     return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
 };
 
-userSchema.methods.validatePassword = function(password) {
+userSchema.methods.validPassword = function(password) {
     return bcrypt.compareSync(password, this.password);
 };
 
