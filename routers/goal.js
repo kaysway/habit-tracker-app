@@ -8,20 +8,16 @@ const { Goal } = require('../models/goal');
 const router = express.Router();
 
 // load goals selection list
-router.get('/goal', (req, res) => {
+router.get('/:userId', (req, res) => {
     let goals;
     Goal
-        .findbyId()
+        .find({user: req.params.userId})
         .then(returnedGoals => {
-            goals = returnedGoals;
-            return GoalPost.find();
-        }).then(goalposts => {
-            res.render('/pages/view-goals', {
-                user: req.user,
-                goals: goals,
-                tasks: tasks
-            });
+            return returnedGoals.serialize();
+        }).catch  (err => {
+            console.error(err);
+            res.status(500).json({ error: 'something went terribly wrong' });
         });
-    });
+});
 
 module.exports = { router };

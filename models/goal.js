@@ -7,6 +7,7 @@ const goalSchema = mongoose.Schema({
     goal: String,
     description: String,
     status: { type: String },
+    dueDate: { type: Date, default: Date.now },
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User" }
 });
 
@@ -15,6 +16,7 @@ goalSchema.methods.serialize = function () {
         id: this._id,
         goal: this.goal,
         description: this.description,
+        dueDate: this.dueDate,
         status: this.status
     };
 };
