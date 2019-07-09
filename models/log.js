@@ -1,5 +1,6 @@
 'use strict';
 const mongoose = require('mongoose');
+const User = require("./user");
 
 mongoose.Promise = global.Promise;
 
@@ -26,7 +27,7 @@ logSchema.methods.serialize = function() {
         id: this._id,
         title: this.title,
         created: moment(this.created).format("ddd, MMM DD, YYYY"),
-        user: this.user,
+        user: this.user.serialize(),
         content: this.content,
         status: this.status
     };

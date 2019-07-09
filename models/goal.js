@@ -1,5 +1,6 @@
 'use strict'
 const mongoose = require("mongoose");
+const User = require("./user");
 
 mongoose.Promise = global.Promise;
 
@@ -11,10 +12,21 @@ const goalSchema = mongoose.Schema({
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User" }
 });
 
+goalSchema.pre('find', function (next) {
+    this.populate('user');
+    next();
+  })
+  
+  goalSchema.pre('findOne', function (next) {
+    this.populate('user');
+    next();
+  })
+
 goalSchema.methods.serialize = function () {
     return {
         id: this._id,
         goal: this.goal,
+        // user: this.user.serialize(),
         description: this.description,
         dueDate: this.dueDate,
         status: this.status
