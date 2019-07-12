@@ -34,7 +34,7 @@ router.post('/', jwtAuth, (req, res) => {
         .then(log => res.status(201).json(entry.serialize()))
         .catch(err => {
         res.status(500).json({ error: 'Something went wrong' });
-    });
+        });
     User.find({ username: req.user.username })
         .then(result => {
             return result[0]._id;

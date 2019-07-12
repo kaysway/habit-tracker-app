@@ -5,7 +5,7 @@ const User = require("./user");
 mongoose.Promise = global.Promise;
 
 const goalSchema = mongoose.Schema({
-    goal: String,
+    goalName: String,
     description: String,
     status: { type: String },
     dueDate: { type: Date, default: Date.now },
@@ -25,7 +25,7 @@ goalSchema.pre('find', function (next) {
 goalSchema.methods.serialize = function () {
     return {
         id: this._id,
-        goal: this.goal,
+        goalName: this.goal,
         // user: this.user.serialize(),
         description: this.description,
         dueDate: this.dueDate,
