@@ -25,13 +25,13 @@ userSchema.methods.serialize = function() {
     };
 };
 
-userSchema.methods.generateHash = function(password) {
-    return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
-};
+userSchema.methods.validatePassword = function(password) {
+    return bcrypt.compare(password, this.password);
+  };
 
-userSchema.methods.validPassword = function(password) {
-    return bcrypt.compareSync(password, this.password);
-};
+  userSchema.statics.hashPassword = function(password) {
+    return bcrypt.hash(password, 10);
+  };
 
 const User = mongoose.model('User', userSchema);
 module.exports = { User };
