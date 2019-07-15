@@ -1,7 +1,5 @@
 "use strict";
-
 require('dotenv').config();
-
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require("mongoose");
@@ -12,6 +10,7 @@ mongoose.Promise = global.Promise;
 const { router: userRouter} = require("./routers/user");
 const { router: goalRouter } = require('./routers/goal');
 const { router: logRouter } = require('./routers/log');
+const { router: authRouter, localStrategy, jwtStrategy } = require('./auth');
 
 const {User} = require('./models/user');
 const {Goal} = require('./models/goal');
@@ -41,12 +40,21 @@ app.use(function (req, res, next) {
   next();
 });
 
-app.use("/user", userRouter);
-app.use("/goal", goalRouter);
-app.use("/log", logRouter);
+app.use("/api/user", userRouter);
+app.use("/api/goal", goalRouter);
+app.use("/api/log", logRouter);
+app.use('/api/auth/', authRouter)
 
-app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/public/index.html');
+passport.use(localStrategy);
+passport.use(jwtStrategy);
+
+const jwtAuth = passport.authenticate('jwt', { session: false });
+
+// A protected endpoint which needs a valid JWT to access it
+app.get('/api/protected', jwtAuth, (req, res) => {
+  return res.json({
+    data: 'rosebud'
+  });
 });
 
 app.use("*", function(req, res) {
