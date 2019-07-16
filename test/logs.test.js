@@ -1,54 +1,47 @@
 'use strict';
 
+const { TEST_DATABASE_URL } = require('../config');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const express = require('express');
-const faker = require('faker');
-const jwt = require('jsonwebtoken');
-
 const mongoose = require('mongoose');
 
-
-const expect = chai.expect;
-
+// this makes the should syntax available throughout this module
 const should = chai.should();
 
-const User = require('../models/user');
-const Goal = require('../models/goal');
-const Log = require('../models/log');
-const { goals, logs, users } =  require('../db/database');
+// Import server.js and use destructuring assignment to create variables for
+// server.app, server.runServer, and server.closeServer
 const { app, runServer, closeServer } = require('../server');
-const { TEST_DATABASE_URL, JWT_SECRET } = require('../db/config');
+const { Log } = require('../models/log');
 
 chai.use(chaiHttp);
 
-describe('Habit Tracker User Logs', function () {
-    let user;
-    let token;
+// describe('Habit Tracker User Logs', function () {
+//     let user;
+//     let token;
   
-    before(function () {
-      return mongoose.connect(TEST_DATABASE_URL, { useNewUrlParser: true, useCreateIndex : true })
-        .then(() => mongoose.connection.db.dropDatabase());
-    });
+//     before(function () {
+//       return mongoose.connect(TEST_DATABASE_URL, { useNewUrlParser: true, useCreateIndex : true })
+//         .then(() => mongoose.connection.db.dropDatabase());
+//     });
   
-    beforeEach(function () {
-      return Promise.all([
-        User.insertMany(users),
-        Log.insertMany(logs),
-      ])
-        .then(([users]) => {
-          user = users[0];
-          token = jwt.sign({user}, JWT_SECRET, {subject: user.username});
-        });
-    });
+//     beforeEach(function () {
+//       return Promise.all([
+//         User.insertMany(users),
+//         Log.insertMany(logs),
+//       ])
+//         .then(([users]) => {
+//           user = users[0];
+//           token = jwt.sign({user}, JWT_SECRET, {subject: user.username});
+//         });
+//     });
   
-    afterEach(function () {
-      return Promise.all([
+//     afterEach(function () {
+//       return Promise.all([
       
-      ]);
-    });
+//       ]);
+//     });
   
-    after(function () {
-      return mongoose.disconnect();
-    });
-});
+//     after(function () {
+//       return mongoose.disconnect();
+//     });
+// });

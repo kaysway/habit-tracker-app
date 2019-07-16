@@ -2,7 +2,10 @@
 
 const express = require('express');
 const bodyParser = require('body-parser');
+const passport = require('passport');
 const jsonParser = bodyParser.json();
+const jwt = require('jsonwebtoken');
+const jwtAuth = passport.authenticate('jwt', {session: false});
 
 const { Goal } = require('../models/goal');
 

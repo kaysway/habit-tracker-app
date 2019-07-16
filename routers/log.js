@@ -2,17 +2,16 @@
 
 const express = require('express');
 const bodyParser = require('body-parser');
+const passport = require('passport');
 const jsonParser = bodyParser.json();
 const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
+const jwt = require('jsonwebtoken');
+const jwtAuth = passport.authenticate('jwt', {session: false});
 
 const { Log } = require('../models/log');
 
 const router = express.Router();
-
-const mongoose = require('mongoose');
-mongoose.Promise = global.Promise;
-
 
 // Post to add a new log by user to a selected goal
 router.post('/', jwtAuth, (req, res) => {

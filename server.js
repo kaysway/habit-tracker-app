@@ -17,7 +17,7 @@ const {Goal} = require('./models/goal');
 const {Log} = require('./models/log');
 
 
-const { PORT, DATABASE_URL } = require("./config/database");
+const { PORT, DATABASE_URL } = require("./config");
 
 const app = express();
 
@@ -66,62 +66,62 @@ app.use(function(err, req, res, next) {
   return res.status(500).json({ message: 'Internal Server Error' });
 });
 
-app.get("/user", (req, res) => {
-  User
-    .find()
-    .then(user => {
-      res.json(user.map(user => {
-        return {
-          id: username._id
-        };
-      }));
-    })
-    .catch(err => {
-      console.error(err);
-      res.status(500).json({ error: 'something went terribly wrong' });
-    });
-});
+// app.get("/user", (req, res) => {
+//   User
+//     .find()
+//     .then(user => {
+//       res.json(user.map(user => {
+//         return {
+//           id: username._id
+//         };
+//       }));
+//     })
+//     .catch(err => {
+//       console.error(err);
+//       res.status(500).json({ error: 'something went terribly wrong' });
+//     });
+// });
 
-app.post('/user', (req, res) => {
-  const requiredFields = ['username', 'password'];
-  requiredFields.forEach(field => {
-    if(!(field in req.body)) {
-      const message = `Missing \`${field}\` in request body`;
-      console.error(message);
-      return res.status(400).send(message);
-    }
-  });
+// app.post('/user', (req, res) => {
+//   const requiredFields = ['username', 'password'];
+//   requiredFields.forEach(field => {
+//     if(!(field in req.body)) {
+//       const message = `Missing \`${field}\` in request body`;
+//       console.error(message);
+//       return res.status(400).send(message);
+//     }
+//   });
 
-  User
-    .findOne({ username: req.body.username })
-    .then(user => {
-      if (user) {
-        const message = `Username already taken`;
-        console.error(message);
-        return res.status(400).send(message);
-      }
-      else {
-        User
-          .create({
-            username: req.body.username,
-            password: req.body.password
-          })
-          .then(user => res.status(201).json({
-              _id: user.id,
-              username: user.username,
-              password: user.password
-            }))
-          .catch(err => {
-            console.error(err);
-            res.status(500).json({ error: 'Something went wrong' });
-          });
-      }
-    })
-    .catch(err => {
-      console.error(err);
-      res.status(500).json({ error: 'something went horribly awry' });
-    });
-});
+//   User
+//     .findOne({ username: req.body.username })
+//     .then(user => {
+//       if (user) {
+//         const message = `Username already taken`;
+//         console.error(message);
+//         return res.status(400).send(message);
+//       }
+//       else {
+//         User
+//           .create({
+//             username: req.body.username,
+//             password: req.body.password
+//           })
+//           .then(user => res.status(201).json({
+//               _id: user.id,
+//               username: user.username,
+//               password: user.password
+//             }))
+//           .catch(err => {
+//             console.error(err);
+//             res.status(500).json({ error: 'Something went wrong' });
+//           });
+//       }
+//     })
+//     .catch(err => {
+//       console.error(err);
+//       res.status(500).json({ error: 'something went horribly awry' });
+//     });
+// });
 
 // app.get('/goal', (req, res) => {
 //   Goal
