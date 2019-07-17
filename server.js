@@ -158,7 +158,7 @@ app.use(function(err, req, res, next) {
 
 // this function starts our server and returns a Promise.
 function runServer() {
-  const port = process.env.PORT || 8080;
+  const port = process.env.PORT || 3000;
   return new Promise((resolve, reject) => {
     app.listen(port, () => {
       console.log(`Your app is listening on port ${port}`);
@@ -176,7 +176,7 @@ function runServer() {
 let server;
 
 function runServer() {
-  const port = process.env.PORT || 8080;
+  const port = process.env.PORT || 3000;
   return new Promise((resolve, reject) => {
     server = app.listen(port, () => {
       console.log(`Your app is listening on port ${port}`);
